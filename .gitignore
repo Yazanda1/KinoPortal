@@ -1,0 +1,19 @@
+# Build/IDE
+bin/
+obj/
+.vs/
+*.user
+*.suo
+
+# Umbraco temp/logs/cache
+umbraco/Logs/
+umbraco/Data/
+wwwroot/umbraco/TEMP/
+
+# OS / Tools
+.DS_Store
+Thumbs.db
+
+# Secrets (lokale Konfigurationen)
+appsettings.Development.json
+appsettings.*.local.json

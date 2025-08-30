@@ -1,0 +1,94 @@
+/* ================================
+   Kino Streaming Portal – site.css
+   Ergänzt Bootstrap mit sanftem Look
+   ================================ */
+
+/* Grundlayout */
+:root{
+  --brand:#0d6efd;
+  --text:#1d232a;
+  --muted:#6c757d;
+  --card:#ffffff;
+  --soft:#f6f7f9;
+  --ring: rgba(13,110,253,.25);
+}
+
+html,body{scroll-behavior:smooth}
+body{color:var(--text); background:#fff}
+
+/* Typo */
+h1,h2,h3,h4{letter-spacing:.2px}
+.lead{color:#333}
+
+/* Navbar */
+.navbar-brand{letter-spacing:.4px}
+.navbar .nav-link{opacity:.9}
+.navbar .nav-link:hover{opacity:1}
+
+/* Container-Abstände */
+main .container{max-width:1100px}
+
+/* Utility */
+.text-muted{color:var(--muted)!important}
+.badge-stars{font-size:1rem;color:#f5c518;letter-spacing:.15rem}
+
+/* Karten / Poster */
+.card{border:1px solid #eaecee; border-radius:14px}
+.card.shadow-sm{box-shadow:0 8px 24px rgba(0,0,0,.06)}
+.card-img-cover{aspect-ratio:16/9; object-fit:cover; border-top-left-radius:14px; border-top-right-radius:14px}
+.w-100.rounded{border-radius:14px}
+
+/* Buttons + Formulare */
+.btn{border-radius:10px}
+.form-control, .form-select, textarea{border-radius:10px}
+.form-control:focus, .form-select:focus, textarea:focus{
+  border-color:var(--brand); box-shadow:0 0 0 .25rem var(--ring);
+}
+
+/* --- Sterne-Anzeige (Read-only) --- */
+.stars{
+  color:#f5c518; font-size:1.1rem; letter-spacing:.15rem; user-select:none;
+}
+
+/* --- Sterne-Eingabe (Form) – ohne JS --- */
+.rating-stars{
+  display:inline-flex; flex-direction: row-reverse; gap:.25rem; font-size:1.5rem; line-height:1;
+}
+.rating-stars input{ display:none }
+.rating-stars label{ cursor:pointer; color:#ced4da; margin:0; transition:color .15s ease }
+.rating-stars input:checked ~ label,
+.rating-stars label:hover,
+.rating-stars label:hover ~ label{ color:#f5c518 }
+
+/* Listen für Feedback */
+.list-group-item{border-color:#eef0f3}
+.list-group-flush .list-group-item{padding-left:0; padding-right:0}
+
+/* Snack-Karten (falls genutzt) */
+.snack-card img{aspect-ratio:4/3; object-fit:cover; border-radius:10px}
+.snack-card .price{font-weight:600}
+
+/* Sections */
+.section-title{margin:1rem 0 .5rem}
+
+/* Footer */
+footer{border-top:1px solid #eaecee}
+
+/* Kleine Helfer */
+.shadow-soft{box-shadow:0 10px 30px rgba(0,0,0,.06)!important}
+.rounded-xl{border-radius:14px}
+
+/* Responsive Kleinigkeiten */
+@media (max-width: 576px){
+  .badge-stars{font-size:1.05rem}
+  .rating-stars{font-size:1.35rem}
+}
+
+/* (Optional) Dark Mode – folgt System */
+@media (prefers-color-scheme: dark){
+  body{background:#0f1115; color:#e6e6e6}
+  .navbar, footer{background:#0b0d10!important}
+  .card{background:#12151b;border-color:#1b2130}
+  .text-muted{color:#9aa3ad!important}
+  .list-group-item{background:transparent;border-color:#1b2130}
+}

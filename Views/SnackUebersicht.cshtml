@@ -1,0 +1,13 @@
+﻿@using Umbraco.Cms.Core.Models.PublishedContent
+@using Umbraco.Extensions
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<IPublishedContent>
+@{ Layout = "Master.cshtml"; }
+
+@{
+    var c = Model;
+}
+<h1>@c.Name</h1>
+@if (c.HasValue("intro")) { <div class="intro">@Html.Raw(c.Value("intro"))</div> }
+
+
+@await Html.PartialAsync("~/Views/Partials/_SnackList.cshtml")

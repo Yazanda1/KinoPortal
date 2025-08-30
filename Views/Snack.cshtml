@@ -1,0 +1,27 @@
+﻿@using Umbraco.Cms.Core.Models.PublishedContent
+@using Umbraco.Extensions
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<IPublishedContent>
+
+@{
+    var c = Model; // der Snack-Knoten
+    var name = c.Value<string>("name") ?? c.Name;
+    var price = c.Value<decimal?>("price") ?? 0;
+    var category = c.Value<string>("category") ?? "";
+    var image = c.Value<Umbraco.Cms.Core.Models.MediaWithCrops>("image");
+}
+
+<article class="snack">
+    <h1>@name</h1>
+
+    @if (image != null && !string.IsNullOrWhiteSpace(image.MediaUrl()))
+    {
+        <img src="@image.MediaUrl()" alt="@name" style="max-width:320px;border-radius:10px" />
+    }
+
+    <p>
+        <strong>Preis:</strong> @price.ToString("0.00") €<br />
+        @if(!string.IsNullOrWhiteSpace(category)){ <strong>Kategorie:</strong> @category }
+    </p>
+
+    <p><a href="javascript:history.back()">Zurück</a></p>
+</article>

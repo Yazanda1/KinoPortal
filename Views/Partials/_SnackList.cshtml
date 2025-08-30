@@ -1,0 +1,61 @@
+@using Umbraco.Cms.Core.Models.PublishedContent
+@using Umbraco.Extensions
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<IPublishedContent>
+
+@{
+    var current = Model;
+
+    // Nullable, damit CS8600 etc. verschwinden
+    IPublishedContent? snackOverview = null;
+
+    snackOverview =
+        (current.ContentType.Alias == "snackOverview" ? current : null)
+        ?? current.AncestorsOrSelf().FirstOrDefault(x => x.ContentType.Alias == "snackOverview")
+        ?? Umbraco.ContentAtRoot().SelectMany(x => x.DescendantsOrSelf())
+                                  .FirstOrDefault(x => x.ContentType.Alias == "snackOverview");
+
+    var snacks = (snackOverview?.Children?.Where(c => c.ContentType.Alias == "snack")
+                 ?? Enumerable.Empty<IPublishedContent>()).ToList();
+}
+
+@if (!snacks.Any())
+{
+    <p>Keine Snacks gefunden.</p>
+}
+else
+{
+    <div class="snacks-grid">
+        @{
+            var i = 0;
+            foreach (var s in snacks)
+            {
+                var price = s.Value<decimal?>("price") ?? 0;
+                var cat = s.Value<string>("category") ?? "";
+                var img = s.Value<Umbraco.Cms.Core.Models.MediaWithCrops>("image");
+                <div class="snack-card">
+                    <div class="snack-img">
+                        @if (img?.MediaUrl() is string url && !string.IsNullOrWhiteSpace(url))
+                        { <img src="@url" alt="@s.Name" /> }
+                    </div>
+                    <div class="snack-info">
+                        <strong>@(s.Value<string>("name") ?? s.Name)</strong>
+                        <div class="snack-meta"><span>@cat</span> · <span>@price.ToString("0.00") €</span></div>
+                        <label><input type="checkbox" name="Preorder[@i].Selected" value="true" /> Auswählen</label>
+                        <label>Menge: <input type="number" name="Preorder[@i].Quantity" value="1" min="1" /></label>
+                        <input type="hidden" name="Preorder[@i].SnackKey" value="@s.Key" />
+                    </div>
+                </div>
+                i++;
+            }
+        }
+    </div>
+}
+
+<style>
+.snacks-grid { display:grid; gap:1rem; grid-template-columns: repeat(auto-fill,minmax(220px,1fr)); margin-top:1rem; }
+.snack-card { border:1px solid #eee; border-radius:12px; padding:12px; }
+.snack-img { height:140px; overflow:hidden; border-radius:8px; background:#fafafa; display:flex; align-items:center; justify-content:center; }
+.snack-img img { width:100%; height:100%; object-fit:cover; display:block; }
+.snack-info { margin-top:8px; }
+.snack-meta { font-size:0.9rem; opacity:0.8; margin:4px 0; }
+</style>

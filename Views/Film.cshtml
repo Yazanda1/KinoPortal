@@ -1,0 +1,95 @@
+﻿@{ Layout = "Master.cshtml"; }
+@using System
+@using Umbraco.Extensions
+@using Umbraco.Cms.Core.Models
+@using Umbraco.Cms.Core.Models.PublishedContent
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<IPublishedContent>
+
+@{
+    var title  = Model.Name;
+    var poster = Model.Value<MediaWithCrops>("poster");
+    var desc   = Model.HasValue("beschreibung")
+                ? Model.Value<string>("beschreibung")
+                : (Model.Value<string>("description") ?? "");
+}
+
+@if (TempData["error"] is string err && !string.IsNullOrWhiteSpace(err))
+{
+    <div class="alert alert-danger" role="alert">@err</div>
+}
+@if (TempData["success"] is string ok && !string.IsNullOrWhiteSpace(ok))
+{
+    <div class="alert alert-success" role="alert">@ok</div>
+}
+
+<div class="row g-4 align-items-start mb-4">
+  <div class="col-12 col-md-5 col-lg-4">
+    @if (poster?.MediaUrl() is string purl)
+    {
+        <img class="w-100 rounded shadow-sm" src="@purl" alt="@title" />
+    }
+  </div>
+  <div class="col">
+    <h1 class="mb-2">@title</h1>
+    @if (!string.IsNullOrWhiteSpace(desc))
+    {
+        <div class="lead">@Html.Raw(desc)</div>
+    }
+  </div>
+</div>
+
+<!-- Feedback-Formular direkt auf der Filmseite -->
+<div class="card shadow-sm mb-4">
+  <div class="card-body">
+    <h3 class="h5 mb-3"><i class="bi bi-chat-dots"></i> Deine Bewertung</h3>
+
+    <form method="post" action="@Url.Action("Submit","FeedbackSurface")" class="row g-3">
+      @Html.AntiForgeryToken()
+      <input type="hidden" name="filmKey" value="@Model.Key" />
+
+      <div class="col-12">
+        <label class="form-label d-block">Bewertung</label>
+        <div class="rating-stars">
+          <input id="star5" type="radio" name="rating" value="5" checked />
+          <label for="star5" title="5 Sterne">★</label>
+          <input id="star4" type="radio" name="rating" value="4" />
+          <label for="star4" title="4 Sterne">★</label>
+          <input id="star3" type="radio" name="rating" value="3" />
+          <label for="star3" title="3 Sterne">★</label>
+          <input id="star2" type="radio" name="rating" value="2" />
+          <label for="star2" title="2 Sterne">★</label>
+          <input id="star1" type="radio" name="rating" value="1" />
+          <label for="star1" title="1 Stern">★</label>
+        </div>
+      </div>
+
+      <div class="col-12">
+        <label class="form-label">Kommentar</label>
+        <textarea class="form-control" name="comment" rows="4" placeholder="Was hat dir gefallen?"></textarea>
+      </div>
+
+      <div class="col-12 col-sm-6">
+        <label class="form-label">Name (optional)</label>
+        <input class="form-control" name="userName" placeholder="Dein Name" />
+      </div>
+
+      <div class="col-12">
+        <button class="btn btn-primary" type="submit">
+          <i class="bi bi-send"></i> Feedback senden
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<style>
+/* kleine Stern-Eingabe ohne JS – nutzt dein site.css-Konzept */
+.rating-stars{
+  display:inline-flex; flex-direction: row-reverse; gap:.25rem; font-size:1.5rem; line-height:1;
+}
+.rating-stars input{ display:none }
+.rating-stars label{ cursor:pointer; color:#ced4da; margin:0; transition:color .15s ease }
+.rating-stars input:checked ~ label,
+.rating-stars label:hover,
+.rating-stars label:hover ~ label{ color:#f5c518 }
+</style>

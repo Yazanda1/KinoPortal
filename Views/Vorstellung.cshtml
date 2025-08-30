@@ -1,0 +1,44 @@
+﻿@using Umbraco.Cms.Core.Models.PublishedContent
+@using Umbraco.Extensions
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<IPublishedContent>
+@{ Layout = "Master.cshtml"; }
+
+@{
+    var c = Model;
+    var film = c.Parent;
+    var filmTitle = film?.Value<string>("title") ?? film?.Name ?? "Vorstellung";
+    var dt = c.Value<DateTime?>("screeningDateTime");
+    var room = c.Value<string>("roomName");
+    var rows = c.Value<int?>("rows") ?? 5;
+    var seatsPerRow = c.Value<int?>("seatsPerRow") ?? 8;
+}
+
+<h1>@filmTitle</h1>
+<p>
+    @if (dt.HasValue){ <span><strong>Start:</strong> @dt.Value.ToString("g")</span> }<br/>
+    @if (!string.IsNullOrWhiteSpace(room)){ <span><strong>Saal:</strong> @room</span> }
+</p>
+
+<h2>Sitzplan (Demo)</h2>
+<div class="seat-grid">
+@for (int r = 0; r < rows; r++)
+{
+    <div class="row">
+    @{
+        var rowLetter = ((char)('A' + r)).ToString();
+        for (int s = 1; s <= seatsPerRow; s++)
+        { <span class="seat">@rowLetter@s</span> }
+    }
+    </div>
+}
+</div>
+
+<h2>Snacks vorbestellen</h2>
+@await Html.PartialAsync("~/Views/Partials/_SnackList.cshtml")
+
+
+<style>
+.seat-grid{display:grid;gap:.25rem}
+.row{display:flex;gap:.25rem}
+.seat{display:inline-block;padding:.35rem .5rem;border:1px solid #ddd;border-radius:6px;font-size:.9rem}
+</style>

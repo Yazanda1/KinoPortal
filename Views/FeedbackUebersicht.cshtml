@@ -1,0 +1,68 @@
+﻿@{ Layout = "Master.cshtml"; }
+@using Umbraco.Cms.Core.Models.PublishedContent
+@using Umbraco.Extensions
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<IPublishedContent>
+
+@{
+    var current = Model;
+
+    // Root & Filme sammeln
+    var root  = current?.Root() ?? Umbraco.ContentAtRoot().FirstOrDefault();
+    var films = (root?.DescendantsOfType("film") ?? Enumerable.Empty<IPublishedContent>()).ToList();
+
+    // Optionaler Einleitungstext
+    var intro = current != null && current.HasValue("intro") ? (current.Value("intro")?.ToString() ?? "") : "";
+}
+
+@if (TempData["error"] is string err && !string.IsNullOrWhiteSpace(err))
+{
+    <div class="alert alert-danger" role="alert">@err</div>
+}
+@if (TempData["success"] is string ok && !string.IsNullOrWhiteSpace(ok))
+{
+    <div class="alert alert-success" role="alert">@ok</div>
+}
+
+<h1 class="mb-2">@current.Name</h1>
+@if (!string.IsNullOrWhiteSpace(intro)) { <p class="text-secondary">@Html.Raw(intro)</p> }
+
+@if (!films.Any())
+{
+    <p class="text-muted">Es wurden noch keine Filme angelegt.</p>
+}
+else
+{
+    <form method="post" action="@Url.Action("Submit","FeedbackSurface")" class="card p-3 shadow-sm" style="max-width:560px">
+        @Html.AntiForgeryToken()
+
+        <div class="mb-3">
+            <label class="form-label">Film</label>
+            <select name="filmKey" class="form-select" required>
+                @foreach (var f in films) { <option value="@f.Key">@f.Name</option> }
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Bewertung (1–5)</label>
+            <input type="number" class="form-control" name="rating" min="1" max="5" value="5" required />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Kommentar</label>
+            <textarea class="form-control" name="comment" rows="4" placeholder="Was hat dir gefallen?"></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Name (optional)</label>
+            <input class="form-control" name="userName" placeholder="Dein Name" />
+        </div>
+
+        <button class="btn btn-primary" type="submit">
+            <i class="bi bi-send"></i> Feedback senden
+        </button>
+    </form>
+
+    <p class="text-muted mt-3">
+        Nach dem Absenden wird dein Feedback gespeichert. Öffne eine Filmseite, um Durchschnitt & letzte Kommentare zu sehen.
+    </p>
+}

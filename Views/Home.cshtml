@@ -1,0 +1,70 @@
+﻿@{ Layout = "Master.cshtml"; }
+@using System.Linq
+@using Umbraco.Extensions
+@using Umbraco.Cms.Core.Models
+@using Umbraco.Cms.Core.Models.PublishedContent
+@inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<IPublishedContent>
+
+@{
+    var home = Model;
+
+    var heroTitle = home.Value<string>("heroTitle") ?? "Willkommen zur Kino-/Streaming-Night!";
+    var heroIntro = home.Value<string>("heroIntro") ?? "Genieße Filme, Snacks und teile dein Feedback.";
+
+    var root          = home.Root();
+    var films         = root.DescendantsOfType("film").ToList();
+    var snackOverview = root.DescendantsOfType("snackOverview").FirstOrDefault();
+    var feedbackPage  = root.DescendantsOfType("feedbackOverview").FirstOrDefault();
+}
+
+<section class="mb-4">
+  <h1 class="mb-2">@heroTitle</h1>
+  @if (!string.IsNullOrWhiteSpace(heroIntro))
+  {
+    <p class="text-secondary lead">@Html.Raw(heroIntro)</p>
+  }
+</section>
+
+<h2 class="section-title">Filme</h2>
+@if (!films.Any())
+{
+  <p class="text-muted">Noch keine Filme angelegt.</p>
+}
+else
+{
+  <div class="row g-3">
+    @foreach (var f in films)
+    {
+        var poster = f.Value<MediaWithCrops>("poster");
+        var posterUrl = poster?.MediaUrl();
+
+        <div class="col-12 col-sm-6 col-lg-4">
+          <a class="card h-100 text-decoration-none shadow-sm" href="@f.Url()">
+            @if (!string.IsNullOrWhiteSpace(posterUrl))
+            {
+              <img class="card-img-top card-img-cover" src="@posterUrl" alt="@f.Name" />
+            }
+            <div class="card-body">
+              <h5 class="card-title text-dark mb-1">@f.Name</h5>
+              <small class="text-muted">Jetzt Details ansehen</small>
+            </div>
+          </a>
+        </div>
+    }
+  </div>
+}
+
+<div class="d-flex gap-2 mt-4">
+  @if (snackOverview != null)
+  {
+    <a class="btn btn-outline-primary" href="@snackOverview.Url()">
+      <i class="bi bi-bag"></i> Snacks ansehen
+    </a>
+  }
+  @if (feedbackPage != null)
+  {
+    <a class="btn btn-outline-secondary" href="@feedbackPage.Url()">
+      <i class="bi bi-chat-dots"></i> Feedback abgeben
+    </a>
+  }
+</div>
